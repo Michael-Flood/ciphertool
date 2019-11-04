@@ -41,5 +41,3 @@ def caesarbruteforce(text):
         attempt = caesarcipher(text, i)
         print(str(i) + " : " + attempt)
     return 0
-
-caesarbruteforce('auv!-v!-n-"|}-!rp r"-zr!!ntr;')
