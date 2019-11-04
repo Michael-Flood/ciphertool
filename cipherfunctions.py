@@ -41,3 +41,42 @@ def caesarbruteforce(text):
         attempt = caesarcipher(text, i)
         print(str(i) + " : " + attempt)
     return 0
+
+def vigenerecipher(text, key, **kwargs):
+    kwargs = kwargs
+    textlen = len(text)
+    keylen = len(text)
+    textlist = list(text)
+    keylist = list(key)
+    keystream = []
+    keyposition = 0
+    while len(keystream) < textlen:
+        try:
+            keystream.append(keylist[keyposition])
+            keyposition += 1
+        except IndexError:
+            keyposition = 0
+    textlist_ord = [( ord(x)) for x in textlist]
+    keystream_ord = [ (ord(x)) for x in keystream]
+    cipherstream = [] # empty list to receive the chars after encipherment
+    # if the keyword argument 'decipher' is set to True, reverse the encipherment. If not, encipher as normal.
+    if kwargs['decipher'] == True:
+        pass # decipher
+    elif kwargs['decipher'] == False or kwargs['decipher'] == None:
+        pass # encipher
+    else:
+        pass # encipher
+    # check that ordinals fall within specified range (32-126), reset them if they are not
+    for i in range(0,len(textlist_ord)):
+        if textlist_ord[i] < 32:
+            charposition = 32 - textlist_ord[i]
+            newposition = 126 - charposition
+    for i in range(0,len(keystream_ord)):
+        if textlist_ord[i] < 32:
+            charposition = 32 - textlist_ord[i]
+            newposition = 126 - charposition
+    cipherstream = []
+    print(textlist_ord)
+    print(keystream_ord)
+
+vigenerecipher('This is a secret message', 'Avocado', decipher=True)
