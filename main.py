@@ -1,93 +1,93 @@
-# main.py - Main class for Krypton Cipher Tool
-
-from tkinter import *
+import tkinter
 from tkinter import filedialog
-from tkinter import ttk
-import cipherfunctions
-
-class CipherModule:
-    def __init__(self):
-        self.infile = None
-        self.outfile = None
-        self.setcipher = None
-        self.cipherlist = ['Caesar', 'Vigenere']
-        self.plaintext = None
-        self.ciphertext = None
-
-    def loadPlainText(self, filename):
-        self.infile = open(b(filename), 'r')
+import os
+import PIL
 
 class Interface:
     def __init__(self):
-        self.windowx = 500
-        self.windowy = 600
-        self.windowgeometry = (str(self.windowx) + "x" + str(self.windowy))
-        self.ciphermodule = CipherModule()
-        self.gui = None
-        # create main window, size, and title
-        self.root = Tk()
-        self.root.geometry(self.windowgeometry)
-        self.root.title("Krypton Cipher Tool")
+        self.gui = {}
+        self.root = tkinter.Tk()
+        self.mainframe = tkinter.Frame(self.root)
+        self.mainframe.grid(row=0,column=0)
 
-        # create main interface widgets
-        self.createMainWidgets()
+        # program variables
+        self.infile = None # location for the imported .txt file
+        self.infilepath = None
+        self.infilepreview = None
+        self.outfile = None # location for the output .txt file
+
+
+
+        self.makeStartGUI()
 
     def loadFile(self):
-        filepath = filedialog.askopenfilename(initialdir="/", title="Load File", filetypes= [(".txt file","*.txt")])
-        self.gui['infile_path'].insert(0,filepath)
-        self.ciphermodule.infile = open(filepath, 'r')
-        self.ciphermodule.plaintext = self.ciphermodule.infile.read()
+        """
+        Open the file loading dialog. After the user selects a .txt file, the file is opened in self.infile and the window widgets
+        are replaced by the main GUI.
+        """
+        print("loadFile")
+        currentpath = os.getcwd()
+        fpath = filedialog.askopenfilename(initialdir = currentpath,title = "Select file",filetypes = (("txt files","*.txt"),("all files","*.*")))
+        self.infile = open(fpath, 'rb')
+        self.infilepath = fpath
+        self.infilepreview = self.infile.readline()
+        self.makeMainGUI()
 
-    def saveFile(self):
-        filepath = filedialog.asksaveasfilename(initialdir="/", title="Save File", filetypes= [(".txt file","*.txt")] )
-        self.gui['outfile_path'].insert(0, filepath)
-        self.ciphermodule.outfile = open(filepath, 'w')
+    def quit(self):
+        """
+        Function to terminate the application
+        """
+        self.root.destroy()
 
-    def createMainWidgets(self):
-        widgets = {}
+    def makeStartGUI(self):
+        """
+        Function to build the initial file loading dialogue for the program.
+        """
+        startGUI = {}
+        startGUI['canvas'] = tkinter.Canvas(self.mainframe, width=300, height=300)
+        startGUI['canvas'].grid(row=0,column=0)
+        startGUI['logo'] = tkinter.PhotoImage(file="key.gif")
+        startGUI['canvas'].create_image(150, 150, image=startGUI['logo'])
+        startGUI['load-file-button'] = tkinter.Button(self.mainframe, text='Load', command=self.loadFile, width=20)
+        startGUI['load-file-button'].grid(row=1,column=0)
+        startGUI['cancel-button'] = tkinter.Button(self.mainframe, text="Quit", command=self.quit, width=20)
+        startGUI['cancel-button'].grid(row=2,column=0)
+        self.gui = startGUI
 
-        # create the main widgets (set filepath for plaintext, set filepath for ciphertext)
-        widgets['infile_label'] = Label(self.root, text="Plaintext File: ")
-        widgets['infile_label'].grid(row=0,column=0)
-        widgets['infile_strvariable'] = StringVar()
-        widgets['infile_path'] = Entry(self.root, width=50, textvariable = widgets['infile_strvariable'])
-        widgets['infile_path'].grid(row=0,column=1)
-        widgets['loadbutton'] = Button(self.root, text="Load File", command=self.loadFile)
-        widgets['loadbutton'].grid(row=0,column=2)
-        widgets['outfile_label'] = Label(self.root, text="Ciphertext Name:")
-        widgets['outfile_label'].grid(row=1,column=0)
-        widgets['outfile_strvariable'] = StringVar()
-        widgets['outfile_path'] = Entry(self.root, width=50, textvariable = widgets['outfile_strvariable'])
-        widgets['outfile_path'].grid(row=1,column=1)
-        widgets['savebutton'] = Button(self.root, text="Save File", command=self.saveFile)
-        widgets['savebutton'].grid(row=1,column=2)
-        widgets['radio-value'] = IntVar()
-        widgets['radio-value'].set(1)
-        widgets['radio-cipher'] = Radiobutton(self.root, text="Cipher", variable=widgets['radio-value'], value=1)
-        widgets['radio-cipher'].grid(row=2,column=0)
-        widgets['radio-decipher'] = Radiobutton(self.root, text="Decipher", variable=widgets['radio-value'], value=2)
-        widgets['radio-decipher'].grid(row=2,column=1)
+    def makeMainGUI(self):
+        """
+        Function to clear self.gui, and replace it with new widgets
+        """
+        # remove StartGUI widgets
+        self.gui['cancel-button'].grid_forget()
+        self.gui['load-file-button'].grid_forget()
+        self.gui['canvas'].grid_forget()
+        del(self.gui['logo'])
+        # build MaiNGUI widgets
+        self.gui['frame'] = tkinter.Frame(self.mainframe, width=100)
+        self.gui['frame'].grid(row=0, column=0)
+        self.gui['mainframe-infile-label'] = tkinter.Label(self.gui['frame'], text="File: ")
+        self.gui['mainframe-infile-label'].grid(row=0, column=0, sticky=tkinter.W)
+        self.gui['mainframe-infile-name'] = tkinter.Label(self.gui['frame'], text=self.infilepath)
+        self.gui['mainframe-infile-name'].grid(row=0, column=1)
+        self.gui['mainframe-preview-label'] = tkinter.Label(self.gui['frame'], text="Preview: ")
+        self.gui['mainframe-preview-label'].grid(row=1, column=0, sticky=tkinter.W)
+        self.gui['infile-preview'] = tkinter.Text(self.gui['frame'], width=30, height=3)
+        self.gui['infile-preview'].grid(row=1, column=1, sticky=tkinter.W)
+        self.gui['infile-preview'].insert(tkinter.END,self.infilepreview)
 
-        # create cipher frame widgets
-        widgets['cipherframe'] = ttk.LabelFrame(self.root, text="Cipher")
-        widgets['cipherframe'].grid(row=2, column=0)
-        widgets['notebook'] = ttk.Notebook(self.root)
-        widgets['notebook'].grid(row=3,column=0)
-        widgets['notebook-frame1'] = ttk.Frame(widgets['notebook'])
-        widgets['notebook-frame2'] = ttk.Frame(widgets['notebook'])
-        widgets['notebook'].add(widgets['notebook-frame1'], text="Caesar")
-        widgets['notebook'].add(widgets['notebook-frame2'], text="Vigenere")
-        widgets['notebook-frame1-rot-label'] = Label(widgets['notebook-frame1'], text="ROT")
-        widgets['notebook-frame1-rot-label'].grid(row=0,column=0)
-        widgets['notebook-frame1-rot-text'] = StringVar()
-        widgets['notebook-frame1-rot-optionlist'] = [x for x in range(1,92)]
-        widgets['notebook-frame1-rot-text'].set(widgets['notebook-frame1-rot-optionlist'][0])
-        widgets['notebook-frame1-rot'] = OptionMenu(widgets['notebook-frame1'], widgets['notebook-frame1-rot-text'], *widgets['notebook-frame1-rot-optionlist'])
-        widgets['notebook-frame1-rot'].grid(row=0,column=1)
-        widgets['notebook-frame1-cipherbutton'] = Button(widgets['notebook-frame1'], text="Cipher", command=None)
-        widgets['notebook-frame1-cipherbutton'].grid(row=1,column=0, columnspan=2, sticky=W+E)
+        self.gui['radio-frame-label'] = tkinter.Label(self.gui['frame'], text="Option: ")
+        self.gui['radio-frame-label'].grid(row=2,column=0)
+        self.gui['radio-frame'] = tkinter.Frame(self.gui['frame'])
+        self.gui['radio-frame'].grid(row=2, column=1, sticky=tkinter.W)
+        self.gui['radio-variable'] = tkinter.StringVar()
+        self.gui['radio-variable'].set('cipher')
+        self.gui['radio-cipher'] = tkinter.Radiobutton(self.gui['radio-frame'], text='Cipher', variable=self.gui['radio-variable'], value='cipher')
+        self.gui['radio-cipher'].grid(row=0, column=0, sticky=tkinter.W)
+        self.gui['radio-decipher'] = tkinter.Radiobutton(self.gui['radio-frame'], text="Decipher", variable=self.gui['radio-variable'], value='decipher')
+        self.gui['radio-decipher'].grid(row=0, column=1, sticky=tkinter.W)
 
-        self.gui = widgets
 
-x = Interface()
-x.root.mainloop()
+if __name__ == '__main__':
+    app = Interface()
+    app.root.mainloop()

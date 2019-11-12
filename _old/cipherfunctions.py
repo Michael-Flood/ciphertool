@@ -6,14 +6,12 @@ def cipherrotate(character, rot):
     # can work backwards when using negative numbers, enabling encryption and decryption with a single function
     digit = ord(character)
     cipherdigit = None
-    if rot == 0:
-        print("Cipher rotation must be greater or less than 0. Please use a positive or negative integer")
     if (digit + rot) <= 32:
         diff = -((digit + rot) - 32)
         cipherdigit = 127 - diff
     elif (digit + rot) >= 126:
         diff = ((digit + rot) - 126)
-        cipherdigit = 31 + diff
+        cipherdigit = 32 + diff
     elif (digit + rot) >= 33 and ((digit + rot) <= 126):
         cipherdigit = digit + rot
     # check if cipherdigit still = None
@@ -21,11 +19,12 @@ def cipherrotate(character, rot):
     return cipherchar
 
 def caesarcipher(text, rot):
-    # Caesar Cipher using settable rotation
-    # Str -> Str
-    # 'aaa' -> caesarcipher('aaa', 1) -> 'bbb'
+    """Caesar Cipher using settable rotation
+    Str -> Str
+    'aaa' -> caesarcipher('aaa', 1) -> 'bbb'
 
-    # split string into list of chars, ciphers (with positive integer rot) or deciphers (with negative integer rot)
+    split string into list of chars, ciphers (with positive integer rot) or deciphers (with negative integer rot)
+    """
     charlist = list(text)
     output = []
     for char in charlist:
@@ -76,7 +75,7 @@ def vigenerecipher(text, key, **kwargs):
             charposition = 32 - textlist_ord[i]
             newposition = 126 - charposition
     cipherstream = []
-    print(textlist_ord)
-    print(keystream_ord)
 
-vigenerecipher('This is a secret message', 'Avocado', decipher=True)
+if __name__ == '__main__':
+    vigenerecipher('This is a secret message', 'Avocado', decipher=True)
+    print(caesarcipher('Uijt!jt!b!tfdsfu!nfttbhf/', -1))
