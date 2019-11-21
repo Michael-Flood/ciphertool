@@ -1,21 +1,30 @@
 # monoalphabetic.py - implements a monoalphabetic (Caesar) cipher.
 
-def rotate(char, rotation):
-    """
-    Function to cipher individual characters of strings. Takes individual characters as input and returns shifted
-    """
-    digit = ord(char)
-    cipherdigit = None
-    if (digit + rotation) <= 32:
-        diff = -((digit + rotation) - 32)
-        cipherdigit = 127 - diff
-    elif (digit + rotation) >= 126:
-        diff = ((digit + rotation)) - 126
-        cipherdigit = 32 + diff
-    elif (digit + rotation) >= 33 and ((digit + rotation) < 126):
-        cipherdigit = digit + rotation
-    cipherchar = chr(cipherdigit)
-    return cipherchar
+from rotate import cipher_rotate
+
+# def rotate(char, rotation):
+#     """
+#     Function to cipher individual characters of strings. Takes individual characters as input and returns shifted characters
+#     """
+#     digit = ord(char)
+#     cipherdigit = None
+#     ciphrange = range(32,127)
+#     if (digit + rotation) not in ciphrange:
+#         if (digit + rotation) > 126:
+#             difference = (digit + rotation) - 126
+#             adjustment = difference - 1
+#             cipherdigit = 32 + adjustment
+#         elif (digit + rotation) < 32:
+#             difference = digit + rotation
+#             adjustment = (difference - 32) + 1
+#             cipherdigit = 126 + adjustment
+#     else:
+#         cipherdigit = (digit + rotation)
+#
+#     cipherchar = chr(cipherdigit)
+#     distance = cipherdigit - digit
+#     print(char, digit, cipherdigit, cipherchar, distance)
+#     return cipherchar
 
 def caesar(inputtext, rotation):
     """
@@ -28,8 +37,7 @@ def caesar(inputtext, rotation):
     charlist = list(inputtext)
     output = []
     for char in charlist:
-        print(char)
-        cipherchar = rotate(char, rotation)
+        cipherchar = cipher_rotate(char, rotation)
         output.append(cipherchar)
     separator = ''
     outputtext = separator.join(output)
@@ -37,4 +45,5 @@ def caesar(inputtext, rotation):
     return outputtext
 
 if __name__ == "__main__":
-    print(caesar('abcdefghi', 3))
+    print(caesar('abcdefghi', 20))
+    print(caesar(' ', -1))

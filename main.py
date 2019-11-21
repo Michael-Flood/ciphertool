@@ -3,11 +3,13 @@ from tkinter import filedialog
 from tkinter import ttk
 import os
 import monoalphabetic
+import polyalphabetic
 
 class Interface:
     def __init__(self):
         self.gui = {}
         self.root = tkinter.Tk()
+        self.root.title("Krypton Cipher Tool")
         self.mainframe = tkinter.Frame(self.root)
         self.mainframe.grid(row=0,column=0)
         # program variables
@@ -26,7 +28,7 @@ class Interface:
         currentpath = os.getcwd()
         self.infilepath = filedialog.askopenfilename(initialdir = currentpath,title = "Select file",filetypes = (("txt files","*.txt"),("all files","*.*")))
         temptext = None
-        with open(self.infilepath) as f:
+        with open(self.infilepath, encoding='utf-8') as f:
             self.infiletext = f.readlines()
         for line in range(0,len(self.infiletext)):
             self.infiletext[line] = self.infiletext[line].replace('\n','')
@@ -48,6 +50,9 @@ class Interface:
         Performs cipher/decipher on file line of text from infile, displays to Preview window
         """
         rotation_num = int(self.gui['notebook-frame1-rotation-var'].get())
+        if (rotation_num > 95) or (rotation_num < 0):
+            print("Rotation values must be between 0 and 95")
+            return 0
         radio_value = self.gui['radio-variable'].get()
         if radio_value == 'cipher':
             pass
@@ -81,6 +86,14 @@ class Interface:
         self.outfile.close()
         self.quit()
 
+    def displayPolyPreview(self):
+        key = self.gui['notebook-frame2-key-var'].get()
+        radio_value = self.gui['radio-variable'].get()
+        text_to_cipher = self.infilepreview
+        text_ciphered = polyalphabetic.polycipher(text_to_cipher, key, radio_value)
+        self.gui['notebook-frame2-preview-entry'].delete('1.0', tkinter.END)
+        self.gui['notebook-frame2-preview-entry'].insert('1.0', text_ciphered)
+
     def makeStartGUI(self):
         """
         Function to build the initial file loading dialogue for the program.
@@ -94,6 +107,8 @@ class Interface:
         startGUI['load-file-button'].grid(row=1,column=0)
         startGUI['cancel-button'] = tkinter.Button(self.mainframe, text="Quit", command=self.quit, width=20)
         startGUI['cancel-button'].grid(row=2,column=0)
+        startGUI['credit'] = tkinter.Label(self.mainframe, text="Copyright (C) 2019 by \nMichael Flood Technical Services")
+        startGUI['credit'].grid(row=3, column=0)
         self.gui = startGUI
 
     def makeMainGUI(self):
@@ -104,6 +119,7 @@ class Interface:
         self.gui['cancel-button'].grid_forget()
         self.gui['load-file-button'].grid_forget()
         self.gui['canvas'].grid_forget()
+        self.gui['credit'].grid_forget()
         del(self.gui['logo'])
         # build MaiNGUI widgets
         self.gui['frame'] = tkinter.Frame(self.mainframe, width=100)
@@ -140,7 +156,7 @@ class Interface:
         self.gui['notebook'].add(self.gui['notebook-frame1'], text="Monalphabetic")
         self.gui['notebook'].add(self.gui['notebook-frame2'], text="Polyalphabetic")
         # build the monoalphbaetic encipherment widgets in frame 1
-        self.gui['notebook-frame1-rotation-label'] = tkinter.Label(self.gui['notebook-frame1'], text="Rotation (0-92)")
+        self.gui['notebook-frame1-rotation-label'] = tkinter.Label(self.gui['notebook-frame1'], text="Rotation (0-95)")
         self.gui['notebook-frame1-rotation-label'].grid(row=0, column=0)
         self.gui['notebook-frame1-rotation-var'] = tkinter.StringVar()
         self.gui['notebook-frame1-rotation-var'].set('0')
@@ -170,14 +186,13 @@ class Interface:
         self.gui['notebook-frame2-preview-label'].grid(row=1, column=0)
         self.gui['notebook-frame2-preview-entry'] = tkinter.Text(self.gui['notebook-frame2'], width=30, height=3)
         self.gui['notebook-frame2-preview-entry'].grid(row=1, column=1)
-        self.gui['notebook-frame2-preview-button'] = tkinter.Button(self.gui['notebook-frame2'], text="Display", width=30, command=None)
+        self.gui['notebook-frame2-preview-button'] = tkinter.Button(self.gui['notebook-frame2'], text="Display", width=30, command=self.displayPolyPreview)
         self.gui['notebook-frame2-preview-button'].grid(row=2, column=1)
         self.gui['notebook-frame2-outfile-name-var'] = tkinter.StringVar()
         self.gui['notebook-frame2-outfile-name-var'].set('output')
         self.gui['notebook-frame2-name-outfile-entry'] = tkinter.Entry(self.gui['notebook-frame2'], width=30, textvariable=self.gui['notebook-frame2-outfile-name-var'])
         self.gui['notebook-frame2-name-outfile-entry'].grid(row=3, column=1)
-        self.gui['notebook-frame2-outfile-button'] = tkinter.Button(self.gui['notebook-frame2'], text="Generate Outfile", width=30, command=self.generateOutfile)
-
+        self.gui['notebook-frame2-outfile-button'] = tkinter.Button(self.gui['notebook-frame2'], text="Generate Outfile", width=30, command=self.generateMonoOutfile)
 
 
 if __name__ == '__main__':
