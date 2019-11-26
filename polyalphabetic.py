@@ -24,6 +24,7 @@ def key_fill(key_text, message_len):
 
     return filled_key
 
+
 def polycipher(input_text, key_text, action):
     """
     Implements Polyalphabetic Vigenere cipher.

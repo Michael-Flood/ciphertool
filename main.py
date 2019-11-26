@@ -94,6 +94,21 @@ class Interface:
         self.gui['notebook-frame2-preview-entry'].delete('1.0', tkinter.END)
         self.gui['notebook-frame2-preview-entry'].insert('1.0', text_ciphered)
 
+    def generatePolyOutfile(self):
+        key = self.gui['notebook-frame2-key-var'].get()
+        text = self.infiletext
+        ciphertext = []
+        radio_value = self.gui['radio-variable'].get()
+        for line in self.infiletext:
+            ciphered = polyalphabetic.polycipher(line, key, radio_value)
+            ciphertext.append(ciphered + '\n')
+        outfile_name = self.gui['notebook-frame2-outfile-name-var'].get() + ".txt"
+        self.outfile = open(outfile_name, 'w')
+        for line in ciphertext:
+            self.outfile.write(line)
+        self.outfile.close()
+        self.quit()
+
     def makeStartGUI(self):
         """
         Function to build the initial file loading dialogue for the program.
@@ -192,7 +207,8 @@ class Interface:
         self.gui['notebook-frame2-outfile-name-var'].set('output')
         self.gui['notebook-frame2-name-outfile-entry'] = tkinter.Entry(self.gui['notebook-frame2'], width=30, textvariable=self.gui['notebook-frame2-outfile-name-var'])
         self.gui['notebook-frame2-name-outfile-entry'].grid(row=3, column=1)
-        self.gui['notebook-frame2-outfile-button'] = tkinter.Button(self.gui['notebook-frame2'], text="Generate Outfile", width=30, command=self.generateMonoOutfile)
+        self.gui['notebook-frame2-outfile-button'] = tkinter.Button(self.gui['notebook-frame2'], text="Generate Outfile", width=30, command=self.generatePolyOutfile)
+        self.gui['notebook-frame2-outfile-button'].grid(row=4,column=1)
 
 
 if __name__ == '__main__':
